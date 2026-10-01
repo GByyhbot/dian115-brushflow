@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "repository": {
+    "id": "community.dian115-brushflow",
+    "name": "DIAN115 BrushFlow 插件市场",
+    "homepage": "https://github.com/GByyhbot/dian115-brushflow"
+  },
+  "plugins": []
+}
