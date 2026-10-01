@@ -132,9 +132,7 @@ The host rule always wins. An undeclared origin/method uses `system`.
 
 See [Package format v1](package-format-v1.md) for every field and cross-file rule.
 
-## 4. Implement the runtime protocol
-
-WASM plugins use the reactor ABI and broker imports described in [WASM runtime v1](wasm-runtime-v1.md). Legacy process plugins use the framed protocol below.
+## 4. Implement the runtime protocol\n\nWASM plugins use the reactor ABI and broker imports described in [WASM runtime v1](wasm-runtime-v1.md). Legacy process plugins use the framed protocol below.
 
 A legacy process reads and writes `Content-Length` framed JSON-RPC 2.0 on stdin/stdout. The channel is full duplex: while handling `runtime.invoke`, the process may send `host.call`, `host.log`, or a Telegram registration and wait for the response. Keep reading stdout responses concurrently or both sides can deadlock.
 
