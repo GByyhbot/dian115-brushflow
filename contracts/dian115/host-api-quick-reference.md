@@ -144,7 +144,7 @@
 | `PATCH` | `/api/subscribe/pool/intents/:id/episodes` | 更新订阅集数：更新聚合订阅需要的集数。 | 写入 | — |
 | `DELETE` | `/api/subscribe/pool/intents/:id` | 取消聚合订阅：取消一条聚合订阅意图。 | ⚠️ 危险 | — |
 | `GET` | `/api/subscribe/air-calendar` | 读取追剧日历：读取订阅播出日历。 | 读取 | — |
-| `GET` | `/api/subscribe/history` | 读取订阅执行历史：读取订阅执行历史。 | 读取 | — |
+| `GET` | `/api/subscribe/history` | 读取订阅历史：读取订阅执行历史。 | 读取 | — |
 | `GET` | `/api/subscribe/entry-settings` | 读取订阅入口设置：读取订阅入口设置。 | 读取 | — |
 | `PUT` | `/api/subscribe/entry-settings` | 更新订阅入口设置：更新订阅入口设置。 | 写入 | — |
 | `GET` | `/api/subscribe/library-settings` | 读取媒体库订阅设置：读取媒体库订阅设置。 | 读取 | — |
@@ -174,7 +174,7 @@
 | `POST` | `/api/organize/history/:id/rename-source` | 重命名整理来源：修正一条历史记录的来源名称。 | 写入 | — |
 | `DELETE` | `/api/organize/history/:id` | 删除整理历史：删除一条整理历史记录。 | ⚠️ 危险 | — |
 | `POST` | `/api/organize/retry-failed` | 重试失败整理：重试失败的整理任务。 | 写入 | — |
-| `GET` | `/api/organize/queue` | 读取待整理队列：读取待整理队列。 | 读取 | — |
+| `GET` | `/api/organize/queue` | 读取整理队列：读取待整理队列。 | 读取 | — |
 | `GET` | `/api/organize/jobs/:job_id/progress` | 读取整理进度：读取一个整理任务的进度。 | 读取 | — |
 | `GET` | `/api/organize/config` | 读取整理配置：读取文件整理配置。 | 读取 | — |
 | `GET` | `/api/organize/categories` | 读取整理分类：读取整理分类列表。 | 读取 | — |
