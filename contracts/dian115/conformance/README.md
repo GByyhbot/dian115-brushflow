@@ -46,7 +46,9 @@ node ../../conformance/project-check.mjs --manifest manifest.template.json --mar
 
 WASM 构建与 CPU 架构无关；legacy process 的 Linux ELF 联调必须在 WSL、Linux CI 或与宿主相同架构的容器中执行。
 
-`runtime-smoke.mjs` 目前只驱动 legacy process 的 stdin/stdout 协议；WASM 插件应由宿主 worker harness 按 [WASM runtime v1](../wasm-runtime-v1.md) 执行同等调用。需要联调自有 legacy process 时，将静态 Linux ELF 放入构建目录后运行：
+`runtime-smoke.mjs` 目前只驱动 legacy process 的 stdin/stdout 协议；WASM 插件应由宿主
+worker harness 按 [WASM runtime v1](../wasm-runtime-v1.md) 执行同等调用。需要联调自有
+legacy process 时，将静态 Linux ELF 放入构建目录后运行：
 
 ```bash
 node ../../conformance/runtime-smoke.mjs --runtime build/runtime/plugin
@@ -58,7 +60,8 @@ node ../../conformance/runtime-smoke.mjs --runtime build/runtime/plugin
 node docs/plugin-platform/conformance/runtime-smoke.mjs --runtime ./build/runtime/plugin
 ```
 
-上面的命令只适用于 `runtime.kind=process` 且入口为静态 Linux ELF 的包；WASM 入口 `runtime/plugin.wasm` 不应传给该工具。
+上面的命令只适用于 `runtime.kind=process` 且入口为静态 Linux ELF 的包；WASM 入口
+`runtime/plugin.wasm` 不应传给该工具。
 
 可选参数：
 

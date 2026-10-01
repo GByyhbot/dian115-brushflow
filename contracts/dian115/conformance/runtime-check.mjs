@@ -40,7 +40,7 @@ export function validateJobSchedules(jobs = []) {
       const [min, max] = bounds[index]
       const candidates = Array.from({ length: max - min + 1 }, (_, n) => n + min)
       const values = field.split(',').flatMap(part => {
-        const match = /^(\*|(?:0|[1-9]\\d*)(?:-(?:0|[1-9]\\d*))?)(?:\/([1-9]\\d*))?$/.exec(part)
+        const match = /^(\*|(?:0|[1-9]\d*)(?:-(?:0|[1-9]\d*))?)(?:\/([1-9]\d*))?$/.exec(part)
         if (!match) error('invalid numeric cron field')
         const range = match[1] === '*' ? [min, max] : match[1].split('-').map(Number)
         const [start, end = start] = range, step = Number(match[2] || 1)

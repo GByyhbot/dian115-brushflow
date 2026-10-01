@@ -38,7 +38,7 @@ const market = readJSON(marketPath, 'market entry')
 
 if (manifest.schema_version !== 1) fail('manifest.schema_version must be 1')
 if (!/^[a-z0-9](?:[a-z0-9.-]{1,126}[a-z0-9])$/.test(manifest.id || '') || String(manifest.id).includes('..')) fail('manifest.id is invalid')
-if (!/^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$/.test(manifest.version || '')) fail('manifest.version must be SemVer')
+if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(manifest.version || '')) fail('manifest.version must be SemVer')
 requireText(manifest.name, 'manifest.name', 80)
 requireText(manifest.description, 'manifest.description', 500)
 requireText(manifest.default_locale, 'manifest.default_locale', 32)

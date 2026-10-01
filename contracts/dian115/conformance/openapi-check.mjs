@@ -50,7 +50,7 @@ for (const key of published.keys()) if (!catalog.has(key)) fail(`documented Host
 const placeholder = ['Direct', 'Response'].join('')
 for (const [key, body] of published) {
   if (!body.includes('      responses:')) fail(`${key} has no responses`)
-  if (!/        '2\\d\\d':\r?\n[\s\S]*?          content:\r?\n/.test(body)) fail(`${key} has no typed success response`)
+  if (!/        '2\d\d':\r?\n[\s\S]*?          content:\r?\n/.test(body)) fail(`${key} has no typed success response`)
   if (!body.includes("        '400':")) fail(`${key} has no explicit 400 response`)
   if (body.includes(placeholder) || body.includes('与对应主项目接口一致')) fail(`${key} uses an opaque response placeholder`)
   if (/^(POST|PUT|PATCH|DELETE) /.test(key) && !body.includes("#/components/parameters/IdempotencyKey")) {
