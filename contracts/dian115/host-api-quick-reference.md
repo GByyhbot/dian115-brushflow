@@ -179,7 +179,7 @@
 | `GET` | `/api/organize/config` | 读取整理配置：读取文件整理配置。 | 读取 | — |
 | `GET` | `/api/organize/categories` | 读取整理分类：读取整理分类列表。 | 读取 | — |
 | `GET` | `/api/organize/categories/:id` | 读取整理分类详情：读取一个整理分类的详情。 | 读取 | — |
-| `GET` | `/api/organize/category-templates` | 读取分类模板：读取整理分类模板。 | 读取 | —
+| `GET` | `/api/organize/category-templates` | 读取分类模板：读取整理分类模板。 | 读取 | — |
 | `GET` | `/api/organize/template-variables` | 读取模板变量：读取整理路径模板可用变量。 | 读取 | — |
 | `GET` | `/api/organize/tmdb-cache/stats` | 读取 TMDB 缓存统计：读取整理模块的 TMDB 缓存统计。 | 读取 | ✓ |
 | `GET` | `/api/organize/tmdb/search` | 整理模块搜索 TMDB：使用宿主 TMDB 凭据搜索媒体。 | 读取 | ✓ |
