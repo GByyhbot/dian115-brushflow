@@ -1,33 +1,47 @@
 {
+  "$schema": "https://raw.githubusercontent.com/madbrolab/dian115/7637a392e9512bd0f7965b99445768969eb075fc/docs/plugin-platform/manifest.schema.json",
   "schema_version": 1,
   "id": "community.dian115-brushflow",
   "name": "站点刷流",
   "version": "0.1.0",
-  "description": "MoviePilot-Plugins brushflow(站点刷流)移植到 DIAN115 插件平台的初版。仅任务配置、规则预览与后台心跳，不下载或删除种子。",
+  "description": "刷流初步架构：任务配置、规则预览与后台心跳；真实站点和下载器执行尚未接通。",
   "default_locale": "zh-CN",
   "publisher": {
     "name": "GByyhbot",
     "key_id": "ed25519:REPLACED_BY_PACKAGER",
-    "url": "https://example.invalid/dian115-brushflow"
+    "url": "https://github.com/GByyhbot/dian115-brushflow"
   },
   "compatibility": {
     "dian115": ">=3.8.51 <4.0.0",
-    "plugin_api": ">=2.0.0 <3.0.0"
+    "plugin_api": "^2.0"
   },
   "runtime": {
     "kind": "wasm",
     "entry": "runtime/plugin.wasm",
     "protocol": "dian115:wasm@1",
-    "resident": true,
+    "startup_timeout_ms": 10000,
+    "shutdown_timeout_ms": 5000,
+    "timeout_ms": 30000,
+    "background_timeout_ms": 300000,
     "max_concurrency": 1,
-    "memory_mb": 64,
-    "timeout_ms": 30000
+    "restart_policy": "on-failure",
+    "memory_mb": 128,
+    "resident": true
   },
   "permissions": {
     "apis": [
-      {"method": "GET", "path": "/api/plugin-runtime/storage/:key", "reason": "读取插件配置、任务、归档和统计"},
-      {"method": "PUT", "path": "/api/plugin-runtime/storage/:key", "reason": "持久化配置、命令队列和运行状态"}
-    ]
+      {
+        "path": "/api/plugin-runtime/storage/:key",
+        "method": "GET",
+        "reason": "读取插件任务配置和后台状态"
+      },
+      {
+        "path": "/api/plugin-runtime/storage/:key",
+        "method": "PUT",
+        "reason": "保存插件任务配置和后台状态"
+      }
+    ],
+    "network": []
   },
   "ui": {
     "mode": "federation",
@@ -37,5 +51,15 @@
       "assets_root": "frontend/dist/assets",
       "module": "./AppPage"
     }
-  }
+  },
+  "events": [],
+  "jobs": [],
+  "homepage": "https://github.com/GByyhbot/dian115-brushflow",
+  "repository": "https://github.com/GByyhbot/dian115-brushflow",
+  "license": "NOASSERTION",
+  "tags": [
+    "pt",
+    "automation",
+    "preview"
+  ]
 }

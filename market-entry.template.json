@@ -1,30 +1,36 @@
 {
-  "schema_version": 1,
-  "repository": {
-    "id": "dian115-brushflow",
-    "name": "dian115-brushflow",
-    "homepage": "https://example.invalid/dian115-brushflow"
+  "id": "community.dian115-brushflow",
+  "name": "站点刷流",
+  "version": "0.1.0",
+  "description": "刷流初步架构：任务配置、规则预览与后台心跳；真实站点和下载器执行尚未接通。",
+  "author": "GByyhbot",
+  "homepage": "https://github.com/GByyhbot/dian115-brushflow",
+  "package_url": "https://github.com/GByyhbot/dian115-brushflow/releases/download/v0.1.0/community.dian115-brushflow-0.1.0.d115p",
+  "sha256": "REPLACED_BY_PACKAGER",
+  "runtime": {
+    "kind": "wasm",
+    "protocol": "dian115:wasm@1",
+    "autostart": true,
+    "trust_level": "wasm-sandbox"
   },
-  "plugins": [
-    {
-      "id": "community.dian115-brushflow",
-      "name": "站点刷流",
-      "version": "0.1.0",
-      "package_url": "https://example.invalid/releases/community.dian115-brushflow-0.1.0.d115p",
-      "sha256": "REPLACED_BY_PACKAGER",
-      "runtime": {
-        "kind": "wasm",
-        "protocol": "dian115:wasm@1",
-        "autostart": true,
-        "trust_level": "wasm-sandbox"
+  "permissions": {
+    "apis": [
+      {
+        "path": "/api/plugin-runtime/storage/:key",
+        "method": "GET",
+        "reason": "读取插件任务配置和后台状态"
       },
-      "permissions": {
-        "apis": [
-          {"method": "GET", "path": "/api/plugin-runtime/storage/:key", "reason": "读取插件配置、任务、归档和统计"},
-          {"method": "PUT", "path": "/api/plugin-runtime/storage/:key", "reason": "持久化配置、命令队列和运行状态"}
-        ]
-      },
-      "tags": ["brushflow", "seeding", "pt"]
-    }
+      {
+        "path": "/api/plugin-runtime/storage/:key",
+        "method": "PUT",
+        "reason": "保存插件任务配置和后台状态"
+      }
+    ],
+    "network": []
+  },
+  "tags": [
+    "pt",
+    "automation",
+    "preview"
   ]
 }

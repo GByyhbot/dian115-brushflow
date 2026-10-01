@@ -101,7 +101,7 @@ func dispatch(raw []byte) (any, error) {
 		var in app.Input
 		if err := json.Unmarshal(m.Params, &in); err != nil {
 			return nil, err
-	}
+		}
 		if in.Envelope.Op == "resident" {
 			for {
 				if err := service.Tick(time.Now()); err != nil {

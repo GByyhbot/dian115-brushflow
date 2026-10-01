@@ -7,11 +7,12 @@ import { emptyConfig, type Bridge, type Config, type Decision, type State } from
 const props = defineProps<{ api: Bridge; runtimeState?: State }>()
 const message = useMessage()
 const config = ref<Config>(emptyConfig())
+const savedConfig = ref('')
 const revision = ref('')
 const state = ref<State>()
 const selected = ref<string | null>(null)
 const busy = ref(false)
-const dirty = ref(false)
+const dirty = computed(() => JSON.stringify(config.value) !== savedConfig.value)
 const error = ref('')
 const ready = ref(false)
 const decisions = ref<Decision[]>([])
@@ -40,14 +41,14 @@ async function load() {
   config.value = structuredClone(response.state.config)
   revision.value = response.state.config_revision
   if (!config.value.tasks.some(t => t.id === selected.value)) selected.value = config.value.tasks[0]?.id ?? null
-  dirty.value = false; ready.value = true
+  savedConfig.value = JSON.stringify(config.value); ready.value = true
  })
 }
 function addTask() {
  const id = crypto.randomUUID()
  config.value.tasks.push({ id, name: `刷流任务 ${config.value.tasks.length + 1}`, enabled: false, site_id: '', downloader_id: '', brush_minutes: 10, check_minutes: 5,
   rules: { free_only: true, exclude_hr: true, include: '', exclude: '', min_bytes: 0, max_bytes: 0 } })
- selected.value = id; dirty.value = true
+ selected.value = id
 }
 async function save() {
  await perform(async () => {
@@ -55,7 +56,7 @@ async function save() {
   if (response.result?.status !== 'succeeded') throw new Error(response.result?.message || '保存失败')
   const snapshot = await props.api.refresh()
   state.value = snapshot; revision.value = snapshot.config_revision
-  config.value = structuredClone(snapshot.config); dirty.value = false
+  config.value = structuredClone(snapshot.config); savedConfig.value = JSON.stringify(config.value)
   message.success('配置已保存')
  })
 }
@@ -84,14 +85,14 @@ onMounted(load)
   <div v-if="config.tasks.length" class="workspace">
    <section><NSelect v-model:value="selected" :options="options" :disabled="busy" placeholder="选择任务" />
     <NCard v-if="task" title="任务配置" class="editor">
-     <fieldset :disabled="busy" @input="dirty = true">
+     <fieldset :disabled="busy">
       <NFormItem label="任务名称"><NInput v-model:value="task.name" :disabled="busy" /></NFormItem>
       <div class="fields"><NFormItem label="站点引用（预留）"><NInput v-model:value="task.site_id" :disabled="busy" /></NFormItem><NFormItem label="下载器引用（预留）"><NInput v-model:value="task.downloader_id" :disabled="busy" /></NFormItem></div>
-      <div class="fields"><NFormItem label="刷新周期（分钟，预留）"><NInputNumber v-model:value="task.brush_minutes" :min="1" :max="1440" :disabled="busy" @update:value="dirty = true" /></NFormItem><NFormItem label="检查周期（分钟，预留）"><NInputNumber v-model:value="task.check_minutes" :min="1" :max="1440" :disabled="busy" @update:value="dirty = true" /></NFormItem></div>
+      <div class="fields"><NFormItem label="刷新周期（分钟，预留）"><NInputNumber v-model:value="task.brush_minutes" :min="1" :max="1440" :disabled="busy" /></NFormItem><NFormItem label="检查周期（分钟，预留）"><NInputNumber v-model:value="task.check_minutes" :min="1" :max="1440" :disabled="busy" /></NFormItem></div>
       <NFormItem label="包含规则（Go RE2 正则）"><NInput v-model:value="task.rules.include" :disabled="busy" /></NFormItem>
       <NFormItem label="排除规则（Go RE2 正则）"><NInput v-model:value="task.rules.exclude" :disabled="busy" /></NFormItem>
-      <div class="fields"><NFormItem label="最小体积（字节）"><NInputNumber v-model:value="task.rules.min_bytes" :min="0" :max="Number.MAX_SAFE_INTEGER" :disabled="busy" @update:value="dirty = true" /></NFormItem><NFormItem label="最大体积（字节；0 不限）"><NInputNumber v-model:value="task.rules.max_bytes" :min="0" :max="Number.MAX_SAFE_INTEGER" :disabled="busy" @update:value="dirty = true" /></NFormItem></div>
-      <NSpace vertical><label class="toggle"><NSwitch v-model:value="task.rules.free_only" :disabled="busy" @update:value="dirty = true" />仅免费种子</label><label class="toggle"><NSwitch v-model:value="task.rules.exclude_hr" :disabled="busy" @update:value="dirty = true" />排除 H&amp;R（未知也排除）</label></NSpace>
+      <div class="fields"><NFormItem label="最小体积（字节）"><NInputNumber v-model:value="task.rules.min_bytes" :min="0" :max="Number.MAX_SAFE_INTEGER" :disabled="busy" /></NFormItem><NFormItem label="最大体积（字节；0 不限）"><NInputNumber v-model:value="task.rules.max_bytes" :min="0" :max="Number.MAX_SAFE_INTEGER" :disabled="busy" /></NFormItem></div>
+      <NSpace vertical><label class="toggle"><NSwitch v-model:value="task.rules.free_only" :disabled="busy" />仅免费种子</label><label class="toggle"><NSwitch v-model:value="task.rules.exclude_hr" :disabled="busy" />排除 H&amp;R（未知也排除）</label></NSpace>
      </fieldset>
     </NCard>
    </section>
