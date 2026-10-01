@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "repository": {
+    "id": "dian115-brushflow",
+    "name": "dian115-brushflow",
+    "homepage": "https://example.invalid/dian115-brushflow"
+  },
+  "plugins": [
+    {
+      "id": "community.dian115-brushflow",
+      "name": "站点刷流",
+      "version": "0.1.0",
+      "package_url": "https://example.invalid/releases/community.dian115-brushflow-0.1.0.d115p",
+      "sha256": "REPLACED_BY_PACKAGER",
+      "runtime": {
+        "kind": "wasm",
+        "protocol": "dian115:wasm@1",
+        "autostart": true,
+        "trust_level": "wasm-sandbox"
+      },
+      "permissions": {
+        "apis": [
+          {"method": "GET", "path": "/api/plugin-runtime/storage/:key", "reason": "读取插件配置、任务、归档和统计"},
+          {"method": "PUT", "path": "/api/plugin-runtime/storage/:key", "reason": "持久化配置、命令队列和运行状态"}
+        ]
+      },
+      "tags": ["brushflow", "seeding", "pt"]
+    }
+  ]
+}

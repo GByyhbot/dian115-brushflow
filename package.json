@@ -1,0 +1,33 @@
+{
+  "name": "dian115-brushflow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run build:ui && npm run build:runtime",
+    "build:ui": "vue-tsc --noEmit && vite build",
+    "build:runtime": "node scripts/build-runtime.mjs",
+    "check": "node contracts/dian115/conformance/project-check.mjs --manifest manifest.template.json --market market-entry.template.json --build-root build --require-build && node scripts/check-wasm.mjs",
+    "check:openapi": "node contracts/dian115/conformance/openapi-check.mjs",
+    "test:wasm": "node scripts/smoke-wasm.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "@lucide/vue": "^1.16.0",
+    "@originjs/vite-plugin-federation": "^1.4.1",
+    "@types/node": "^22.0.0",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "naive-ui": "^2.38.0",
+    "typescript": "^5.0.0",
+    "vite": "^6.4.3",
+    "vue": "^3.4.0",
+    "vue-tsc": "^2.0.0",
+    "yazl": "^3.3.1"
+  },
+  "peerDependencies": {
+    "@lucide/vue": "^1.16.0",
+    "naive-ui": "^2.38.0",
+    "vue": "^3.4.0"
+  }
+}

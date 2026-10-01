@@ -1,0 +1,12 @@
+node_modules/
+build/
+releases/
+*.d115p
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+.tools/
+coverage*
+*.test
