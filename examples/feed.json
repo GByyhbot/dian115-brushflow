@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "id": "example-20261002-001",
+      "title": "Example.Movie.2026.1080p.BluRay",
+      "size_bytes": 10737418240,
+      "download_url": "magnet:?xt=urn:btih:0000000000000000000000000000000000000000",
+      "free": true,
+      "hr": false,
+      "published_at": "2026-10-02T08:00:00Z",
+      "seeders": 3,
+      "free_until": "2026-10-03T08:00:00Z"
+    }
+  ]
+}

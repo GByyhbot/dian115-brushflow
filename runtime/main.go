@@ -51,7 +51,8 @@ func (broker) Call(method string, params any, out any) error {
 }
 
 var inputBuffer, outputBuffer []byte
-var service = app.Service{Store: host.Client{Caller: broker{}}}
+var hostClient = host.Client{Caller: broker{}}
+var service = app.Service{Store: hostClient, Broker: hostClient}
 
 //go:wasmexport dian115_alloc
 func allocate(size uint32) uint32 {
@@ -104,9 +105,7 @@ func dispatch(raw []byte) (any, error) {
 		}
 		if in.Envelope.Op == "resident" {
 			for {
-				if err := service.Tick(time.Now()); err != nil {
-					return nil, err
-				}
+				_ = service.Tick(time.Now())
 				time.Sleep(time.Minute)
 			}
 		}

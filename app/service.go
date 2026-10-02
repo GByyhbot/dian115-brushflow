@@ -1,7 +1,9 @@
 package app
 
 import (
+	"context"
 	"crypto/sha256"
+	"dian115-brushflow/adapters"
 	"dian115-brushflow/core"
 	"dian115-brushflow/host"
 	"encoding/hex"
@@ -15,7 +17,10 @@ type Store interface {
 	Read(string, any) (string, bool, error)
 	Write(string, any, string, string) error
 }
-type Service struct{ Store Store }
+type Service struct {
+	Store  Store
+	Broker adapters.Broker
+}
 type Input struct {
 	Envelope struct {
 		Op           string          `json:"op"`
@@ -76,7 +81,11 @@ func (s Service) state(raw json.RawMessage) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	state := map[string]any{"config": c, "config_revision": rev, "heartbeat": beat, "mode": "preview-only", "live_execution": false, "version": "0.1.0"}
+	runtime, _, err := s.runtimeState()
+	if err != nil {
+		return nil, err
+	}
+	state := map[string]any{"config": c, "config_revision": rev, "heartbeat": beat, "runtime": runtime, "mode": "live", "live_execution": true, "version": "1.0.0"}
 	b, _ := json.Marshal(state)
 	hash := sha256.Sum256(b)
 	version := hex.EncodeToString(hash[:])
@@ -124,7 +133,7 @@ func (s Service) action(id string, raw json.RawMessage) (any, error) {
 		if err = s.Store.Write("config", v.Config, rev, key); err != nil {
 			return failed(err), nil
 		}
-		return map[string]any{"status": "succeeded", "message": "配置已保存；初版仅支持规则预览"}, nil
+		return map[string]any{"status": "succeeded", "message": "配置已保存"}, nil
 	case "preview":
 		var v struct {
 			TaskID     string           `json:"task_id"`
@@ -147,14 +156,34 @@ func (s Service) action(id string, raw json.RawMessage) (any, error) {
 			}
 		}
 		return failed(errors.New("task not found; save configuration first")), nil
-	case "run", "check", "delete":
-		return map[string]any{"status": "skipped", "code": "adapter_unavailable", "message": "初步架构未接通下载器，不执行下载或删种"}, nil
+	case "run", "check":
+		var v struct {
+			TaskID string `json:"task_id"`
+		}
+		if err := json.Unmarshal(p.Input, &v); err != nil {
+			return failed(err), nil
+		}
+		if s.Broker == nil {
+			return failed(errors.New("network broker unavailable")), nil
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 110*time.Second)
+		defer cancel()
+		var report RunReport
+		var execErr error
+		if p.ID == "run" {
+			report, execErr = s.brush(ctx, v.TaskID, id)
+		} else {
+			report, execErr = s.check(ctx, v.TaskID, id)
+		}
+		if execErr != nil {
+			return failed(execErr), nil
+		}
+		return map[string]any{"status": "succeeded", "message": fmt.Sprintf("新增 %d，删除 %d", report.Added, report.Deleted), "report": report}, nil
 	default:
 		return failed(errors.New("unknown action")), nil
 	}
 }
 
-// Tick only records readiness. It must never pretend to have brushed or checked torrents.
 func (s Service) Tick(now time.Time) error {
 	c, _, err := s.config()
 	if err != nil {
@@ -166,6 +195,14 @@ func (s Service) Tick(now time.Time) error {
 			n++
 		}
 	}
+	status := "ok"
+	runErr := s.runDue(context.Background(), now)
+	if runErr != nil {
+		status = runErr.Error()
+	}
 	stamp := now.UTC().Format(time.RFC3339Nano)
-	return s.Store.Write("heartbeat", Heartbeat{stamp, n, "adapter_unavailable"}, "", fmt.Sprintf("heartbeat-%s", stamp))
+	if err := s.Store.Write("heartbeat", Heartbeat{stamp, n, status}, "", fmt.Sprintf("heartbeat-%s", stamp)); err != nil {
+		return err
+	}
+	return runErr
 }

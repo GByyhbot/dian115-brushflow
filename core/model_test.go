@@ -6,14 +6,14 @@ func TestEvaluateUnknownAndBoundaries(t *testing.T) {
 	yes, no := true, false
 	rules := Rules{FreeOnly: true, ExcludeHR: true, MinBytes: 100, MaxBytes: 200, Include: "movie", Exclude: "cam"}
 	rows := []Candidate{
-		{"unknown", "Movie", 100, nil, &no},
-		{"hr-unknown", "Movie", 100, &yes, nil},
-		{"hr", "Movie", 100, &yes, &yes},
-		{"lower", "MOVIE", 100, &yes, &no},
-		{"upper", "Movie", 200, &yes, &no},
-		{"large", "Movie", 201, &yes, &no},
-		{"blocked", "Movie.CAM", 150, &yes, &no},
-		{"lower", "Movie", 100, &yes, &no},
+		{ID: "unknown", Title: "Movie", SizeBytes: 100, Free: nil, HR: &no},
+		{ID: "hr-unknown", Title: "Movie", SizeBytes: 100, Free: &yes, HR: nil},
+		{ID: "hr", Title: "Movie", SizeBytes: 100, Free: &yes, HR: &yes},
+		{ID: "lower", Title: "MOVIE", SizeBytes: 100, Free: &yes, HR: &no},
+		{ID: "upper", Title: "Movie", SizeBytes: 200, Free: &yes, HR: &no},
+		{ID: "large", Title: "Movie", SizeBytes: 201, Free: &yes, HR: &no},
+		{ID: "blocked", Title: "Movie.CAM", SizeBytes: 150, Free: &yes, HR: &no},
+		{ID: "lower", Title: "Movie", SizeBytes: 100, Free: &yes, HR: &no},
 	}
 	got, err := Evaluate(rules, rows)
 	if err != nil {

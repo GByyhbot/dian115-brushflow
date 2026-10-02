@@ -1,24 +1,65 @@
 # DIAN115 BrushFlow
 
-将 MoviePilot brushflow 的策略迁移到 DIAN115 Plugin API v2 的独立插件初步架构。
+DIAN115 Plugin API v2 刷流插件。1.0 版本通过标准 JSON Feed 获取候选资源，通过 qBittorrent Web API 下载、检查和清理种子，不依赖 DIAN115 未公开的内部 PT 接口。
 
-**当前版本 0.1.0 仅支持任务配置、规则预览和后台心跳，不会添加、暂停或删除真实种子。**
+## 功能
 
-## 已实现
+- 多站点、多 qBittorrent、多独立任务和常驻调度。
+- 免费、H&R、标题正则、体积、做种人数和发布时间筛选。
+- 每个任务限制活动种子数。
+- 按做种时间、分享率、上传量、下载超时和免费到期清理。
+- 使用任务标签和候选唯一标签双重确认所有权；不会清理无法确认归属的种子。
+- Host Storage 持久化配置、种子记录、最近执行历史和后台心跳。
+- 手动选种、手动检查、规则预览、Telegram 通知。
+- qBittorrent 和站点凭据只保存为 dian115 托管凭据引用，配置中不保存 Cookie 或密码。
 
-- Go WASM reactor 入口和 Host Call 封装；不直接使用网络 Socket 或宿主文件。
-- Host Storage 配置持久化，更新使用 ETag / If-Match，并携带稳定幂等键。
-- 任务配置校验、免费/H&R/正则/体积筛选和候选 ID 去重。
-- 未知促销或 H&R 信息保守排除；预览无下载副作用。
-- Vue 3 / Naive UI 联邦管理页面，本地 mock 预览入口。
-- 独立 resident 心跳，页面与 resident 通过 Host Storage 交换状态。
-- 外部站点、下载器接口边界；不可用适配器明确返回错误。
-- 配置冲突、重启读取、规则边界、预览无副作用及 Broker 存储测试。
-- 官方固定版本协议检查工具、WASM ABI 检查和 GitHub Actions。
+## 站点 JSON Feed
 
-## 构建与验证
+插件使用稳定、可测试的 JSON 边界。可以用站点 API、RSS 转换器或代理生成：
 
-需要 Node.js 22+、npm、Go 1.24+（需支持 `wasip1` reactor 与 `//go:wasmexport`；本项目验证使用 Go 1.27.1）。
+```json
+{
+  "items": [
+    {
+      "id": "site-torrent-123",
+      "title": "Example.Movie.1080p",
+      "size_bytes": 10737418240,
+      "download_url": "magnet:?xt=urn:btih:...",
+      "free": true,
+      "hr": false,
+      "published_at": "2026-10-02T08:00:00Z",
+      "seeders": 3,
+      "free_until": "2026-10-03T08:00:00Z"
+    }
+  ]
+}
+```
+
+`id` 必须在站点内稳定且唯一。需要“仅免费”“排除 H&R”或最大做种人数时，相应字段缺失会被保守排除。启用最大发布时间后，时间缺失或格式错误也会被排除。`download_url` 只接受磁力链接或 HTTP(S) 种子 URL；HTTP(S) 种子会先由 Broker 使用站点托管凭据下载，再上传给 qBittorrent，单个文件上限 4 MiB。
+
+## 凭据和网络
+
+在 dian115 插件安装实例的托管凭据界面创建绑定，然后把返回的 `credential_ref` 填入站点或下载器：
+
+- JSON Feed 通常绑定 `GET` 和 Feed 路径，可注入 Cookie、Authorization 或 query token。
+- qBittorrent 绑定应覆盖 `GET/POST` 的 `/api/v2/` 路径。可注入已有 `SID=...` Cookie，或在可信反向代理中注入 Authorization。
+- Broker 会删除登录响应的 `Set-Cookie`，插件无法自行保存 qB 登录会话。不要在插件配置中填写明文密码。
+- qBittorrent 地址必须是 DIAN115 容器能够访问的地址；容器内的 `127.0.0.1` 通常不是物理宿主机。
+
+## 安全启用顺序
+
+1. 安装插件，配置站点 Feed 和 qBittorrent，任务保持停用。
+2. 保存后用规则预览核对选种条件。
+3. 点击“立即选种”，确认 qB 中出现 `brushflow-<task-id>` 与 `bfid-...` 标签。
+4. 点击“立即检查”，确认状态同步正常。
+5. 配置删除条件。所有删除条件为“任一满足”；数值 `0` 表示关闭该条件。
+6. 明确决定是否勾选“删种时同时删除文件”，最后启用自动调度。
+
+免费到期删除只处理尚未完成的任务。做种时间、分享率和上传量只处理已完成种子。下载超时只处理未完成种子。
+
+## 构建、测试和打包
+
+需要 Node.js 22+、npm 和支持 `wasip1` reactor/`//go:wasmexport` 的 Go；CI 使用 Go 1.27.1。
 
 ```sh
 npm ci
@@ -27,42 +68,15 @@ npm run build
 npm run check
 npm run test:wasm
 npm run check:openapi
+npm run package
 ```
 
-输出为 `build/runtime/plugin.wasm` 和 `build/frontend/dist/assets/remoteEntry.js`。
+开发环境首次打包可运行 `npm run package -- --generate-key`。正式发布必须固定使用同一 Ed25519 发布密钥。私钥、`build/`、`releases/` 和 `.d115p` 均被 Git 忽略。
 
-```sh
-npm run dev
-```
+## 当前兼容范围
 
-本地页面仅以内存模拟配置保存；刷新浏览器会丢失 mock 数据。规则预览必须通过真实插件 runtime 或 Go 测试执行，本地 mock 不复制 Go 策略。
+- DIAN115 `>=3.8.51 <4.0.0`，Plugin API v2。
+- qBittorrent Web API v2。
+- 暂不包含 Transmission、MoviePilot 站点解析器、站点分享率控制、订阅排除和全局跨任务动态容量删除。
 
-## 本地签名包
-
-```sh
-npm run package -- --generate-key
-```
-
-开发私钥、构建目录和 `.d115p` 已忽略，不提交到 GitHub。正式发布前替换 manifest 的发布者、仓库地址和 market 的包地址，并使用长期固定签名密钥。模板市场地址不是可用下载链接。
-
-生成包可在 DIAN115 插件中心本地导入。**尚未在真实宿主验收安装、resident 生命周期及下载器认证；通过静态检查不等于完整宿主兼容。**
-
-## 使用
-
-1. 创建任务并保存。初版不开放任务启用开关，后台只报告就绪情况。
-2. 设置包含/排除正则、免费/H&R 条件与体积范围；体积单位为字节。
-3. 保存配置，再提交候选 JSON 进行规则预览。
-4. 查看匹配结果。`run`、`check`、`delete` 在此版本均返回 `skipped`。
-
-正则使用 Go RE2，与 Python `re` 不完全相同，不支持后向引用及环视。上游配置不能未经转换直接导入。
-
-## 下一阶段
-
-1. 验证 Broker 与 qBittorrent 的认证会话；明确 Set-Cookie 过滤后的认证路径。
-2. 实现单站点 RSS/API 适配与明确的字段缺失策略。
-3. 实现读取下载器、任务所有权和添加结果核对，再开放执行。
-4. 引入持久化命令队列与单一 resident 执行者；目前未实现自动调度执行。
-5. 删除预览、H&R 删除保护、幂等恢复后，再实现自动删除。
-6. 多任务配额、促销到期、订阅排除、Transmission、统计归档。
-
-详见 [架构说明](docs/architecture.md) 与 [来源说明](THIRD_PARTY_NOTICES.md)。
+完整架构和安全边界见 [docs/architecture.md](docs/architecture.md)，上游来源见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

@@ -3,8 +3,8 @@
   "schema_version": 1,
   "id": "community.dian115-brushflow",
   "name": "站点刷流",
-  "version": "0.1.0",
-  "description": "刷流初步架构：任务配置、规则预览与后台心跳；真实站点和下载器执行尚未接通。",
+  "version": "1.0.0",
+  "description": "通过 JSON Feed 和 qBittorrent 自动选种、做种检查、保护性删种、通知与运行统计。",
   "default_locale": "zh-CN",
   "publisher": {
     "name": "GByyhbot",
@@ -21,8 +21,8 @@
     "protocol": "dian115:wasm@1",
     "startup_timeout_ms": 10000,
     "shutdown_timeout_ms": 5000,
-    "timeout_ms": 30000,
-    "background_timeout_ms": 300000,
+    "timeout_ms": 120000,
+    "background_timeout_ms": 3600000,
     "max_concurrency": 1,
     "restart_policy": "on-failure",
     "memory_mb": 128,
@@ -39,6 +39,11 @@
         "path": "/api/plugin-runtime/storage/:key",
         "method": "PUT",
         "reason": "保存插件任务配置和后台状态"
+      },
+      {
+        "path": "/api/notifications/plugin",
+        "method": "POST",
+        "reason": "发送用户启用的刷流新增、删除与异常通知"
       }
     ],
     "network": []
@@ -60,6 +65,6 @@
   "tags": [
     "pt",
     "automation",
-    "preview"
+    "qbittorrent"
   ]
 }

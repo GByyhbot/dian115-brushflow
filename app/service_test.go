@@ -88,8 +88,8 @@ func TestPreviewAndExecutionNeverMutate(t *testing.T) {
 	if decisions[0].Reason != "promotion_unknown" {
 		t.Fatal(decisions)
 	}
-	for _, id := range []string{"run", "check", "delete"} {
-		if got := action(t, s, id, nil); got["status"] != "skipped" {
+	for _, id := range []string{"run", "check"} {
+		if got := action(t, s, id, nil); got["status"] != "failed" {
 			t.Fatal(got)
 		}
 	}

@@ -1,40 +1,33 @@
-// Package adapters defines the boundary between strategy and external systems.
-// v0.1 deliberately ships no live download/delete implementation.
 package adapters
 
 import (
 	"context"
 	"dian115-brushflow/core"
-	"errors"
+	"dian115-brushflow/host"
 )
 
-var ErrNotImplemented = errors.New("live adapter is not implemented in v0.1")
-
+type Broker interface {
+	Do(host.Request) (host.Response, error)
+}
 type Site interface {
-	Candidates(context.Context, string) ([]core.Candidate, error)
+	Candidates(context.Context) ([]core.Candidate, error)
 }
 type Torrent struct {
-	DownloaderID    string
-	Hash            string
-	OwnerTaskID     string
-	UploadedBytes   int64
-	DownloadedBytes int64
-	SeedingSeconds  int64
+	DownloaderID    string   `json:"downloader_id"`
+	Hash            string   `json:"hash"`
+	Name            string   `json:"name"`
+	Tags            []string `json:"tags"`
+	UploadedBytes   int64    `json:"uploaded_bytes"`
+	DownloadedBytes int64    `json:"downloaded_bytes"`
+	TotalBytes      int64    `json:"total_bytes"`
+	AmountLeft      int64    `json:"amount_left"`
+	Ratio           float64  `json:"ratio"`
+	AddedAt         int64    `json:"added_at"`
+	CompletedAt     int64    `json:"completed_at"`
+	LastActivity    int64    `json:"last_activity"`
 }
 type Downloader interface {
-	List(context.Context) ([]Torrent, error)
-	Add(context.Context, core.Task, core.Candidate, string) (string, error)
-	Remove(context.Context, Torrent, bool, string) error
-}
-
-// Ownership must be checked against persisted downloader ID, hash and task ID,
-// not a human-readable torrent name. Implementations must reconcile timeouts.
-type UnavailableDownloader struct{}
-
-func (UnavailableDownloader) List(context.Context) ([]Torrent, error) { return nil, ErrNotImplemented }
-func (UnavailableDownloader) Add(context.Context, core.Task, core.Candidate, string) (string, error) {
-	return "", ErrNotImplemented
-}
-func (UnavailableDownloader) Remove(context.Context, Torrent, bool, string) error {
-	return ErrNotImplemented
+	List(context.Context, string) ([]Torrent, error)
+	Add(context.Context, core.Task, core.Candidate, string, string) error
+	Remove(context.Context, string, bool, string) error
 }

@@ -31,17 +31,26 @@ func (r Response) Header(name string) string {
 	return ""
 }
 func (r Response) Decode(out any) error {
+	b, err := r.BodyBytes()
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, out)
+}
+func (r Response) BodyBytes() ([]byte, error) {
 	b, err := base64.RawStdEncoding.DecodeString(r.BodyBase64)
 	if err != nil {
 		b, err = base64.StdEncoding.DecodeString(r.BodyBase64)
 	}
 	if err != nil {
-		return errors.New("invalid broker body encoding")
+		return nil, errors.New("invalid broker body encoding")
 	}
-	return json.Unmarshal(b, out)
+	return b, nil
 }
 
 type Client struct{ Caller Caller }
+
+func EncodeBody(value []byte) string { return base64.RawStdEncoding.EncodeToString(value) }
 
 func (c Client) Do(req Request) (Response, error) {
 	var res Response
