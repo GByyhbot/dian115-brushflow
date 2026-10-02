@@ -93,7 +93,7 @@ npm run package
 
 ## 当前兼容范围
 
-- DIAN115 `>=3.8.51 <4.0.0`，Plugin API v2。
+- DIAN115 `>=3.8.51 <5.0.0`（包括 4.0.64），Plugin API v2。
 - qBittorrent Web API v2。
 - 暂不包含 Transmission、MoviePilot 站点解析器、站点分享率控制、订阅排除和全局跨任务动态容量删除。
 

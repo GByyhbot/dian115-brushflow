@@ -3,7 +3,7 @@
   "schema_version": 1,
   "id": "community.dian115-brushflow",
   "name": "站点刷流",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "通过 JSON Feed 和 qBittorrent 自动选种、做种检查、保护性删种、通知与运行统计。",
   "default_locale": "zh-CN",
   "publisher": {
@@ -12,7 +12,7 @@
     "url": "https://github.com/GByyhbot/dian115-brushflow"
   },
   "compatibility": {
-    "dian115": ">=3.8.51 <4.0.0",
+    "dian115": ">=3.8.51 <5.0.0",
     "plugin_api": "^2.0"
   },
   "runtime": {

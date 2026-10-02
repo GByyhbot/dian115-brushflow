@@ -9,12 +9,12 @@
     {
       "id": "community.dian115-brushflow",
       "name": "站点刷流",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "通过 JSON Feed 和 qBittorrent 自动选种、做种检查、保护性删种、通知与运行统计。",
       "author": "GByyhbot",
       "homepage": "https://github.com/GByyhbot/dian115-brushflow",
-      "package_url": "https://github.com/GByyhbot/dian115-brushflow/releases/download/v1.0.0/community.dian115-brushflow-1.0.0.d115p",
-      "sha256": "b9086b21fe79c87ab32b6ffa77493f202c85edeebc306d8aafd616128eaa0997",
+      "package_url": "https://github.com/GByyhbot/dian115-brushflow/releases/download/v1.0.1/community.dian115-brushflow-1.0.1.d115p",
+      "sha256": "d94de48e9beee2b24e6bc571ff912078aa55f5aeb30e387b473adc3b159b6d11",
       "runtime": {
         "kind": "wasm",
         "protocol": "dian115:wasm@1",
@@ -23,13 +23,29 @@
       },
       "permissions": {
         "apis": [
-          {"path": "/api/plugin-runtime/storage/:key", "method": "GET", "reason": "读取插件任务配置和后台状态"},
-          {"path": "/api/plugin-runtime/storage/:key", "method": "PUT", "reason": "保存插件任务配置和后台状态"},
-          {"path": "/api/notifications/plugin", "method": "POST", "reason": "发送用户启用的刷流新增、删除与异常通知"}
+          {
+            "path": "/api/plugin-runtime/storage/:key",
+            "method": "GET",
+            "reason": "读取插件任务配置和后台状态"
+          },
+          {
+            "path": "/api/plugin-runtime/storage/:key",
+            "method": "PUT",
+            "reason": "保存插件任务配置和后台状态"
+          },
+          {
+            "path": "/api/notifications/plugin",
+            "method": "POST",
+            "reason": "发送用户启用的刷流新增、删除与异常通知"
+          }
         ],
         "network": []
       },
-      "tags": ["pt", "automation", "qbittorrent"]
+      "tags": [
+        "pt",
+        "automation",
+        "qbittorrent"
+      ]
     }
   ]
 }

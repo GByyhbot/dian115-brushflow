@@ -1,11 +1,11 @@
 {
   "id": "community.dian115-brushflow",
   "name": "站点刷流",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "通过 JSON Feed 和 qBittorrent 自动选种、做种检查、保护性删种、通知与运行统计。",
   "author": "GByyhbot",
   "homepage": "https://github.com/GByyhbot/dian115-brushflow",
-  "package_url": "https://github.com/GByyhbot/dian115-brushflow/releases/download/v1.0.0/community.dian115-brushflow-1.0.0.d115p",
+  "package_url": "https://github.com/GByyhbot/dian115-brushflow/releases/download/v1.0.1/community.dian115-brushflow-1.0.1.d115p",
   "sha256": "REPLACED_BY_PACKAGER",
   "runtime": {
     "kind": "wasm",
