@@ -2,6 +2,24 @@
 
 DIAN115 Plugin API v2 刷流插件。1.0 版本通过标准 JSON Feed 获取候选资源，通过 qBittorrent Web API 下载、检查和清理种子，不依赖 DIAN115 未公开的内部 PT 接口。
 
+## 安装
+
+在 DIAN115 的“插件中心 → 仓库与开发”中添加以下任一地址：
+
+```text
+https://raw.githubusercontent.com/GByyhbot/dian115-brushflow/main/plugin-market/index.json
+```
+
+如果当前网络无法访问 GitHub Raw，可使用 jsDelivr 索引地址：
+
+```text
+https://cdn.jsdelivr.net/gh/GByyhbot/dian115-brushflow@main/plugin-market/index.json
+```
+
+不要填写 GitHub 网页的 `.../blob/.../plugin-market/index.json` 地址。如果 DIAN115 的 GitHub 加速地址不可用，应在系统网络设置中关闭或更换该加速地址，然后删除旧仓库并用上述地址重新添加。插件包仍从 GitHub Release 下载，因此安装时也需要容器能够访问 GitHub Release，或配置一个可用的 GitHub 加速地址。
+
+也可以从 [GitHub Release](https://github.com/GByyhbot/dian115-brushflow/releases/latest) 下载 `.d115p`，然后在同一页面使用“本地导入”。本地导入会执行与市场安装相同的签名、完整性和权限检查。
+
 ## 功能
 
 - 多站点、多 qBittorrent、多独立任务和常驻调度。
